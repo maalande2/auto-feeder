@@ -1,0 +1,7 @@
+build/
+.vscode/
+__pycache__/
+*.pyc
+.DS_Store
+blink_test/
+esp-idf/
