@@ -1,3 +1,0 @@
-- start w/ mode creation so i can have feed_now only active when i want
-- implement mode features (feed_now w/ servo first)
-- work on display
