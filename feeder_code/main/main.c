@@ -21,8 +21,8 @@ void app_main(void)
     while (1)
     {
         /* --- servos open-close each feed time --- */
-        open_close_servo(OPEN_TICKS); // can be changed by PORTION SIZE later
-        vTaskDelay(NEXT_FEED);        // can be changed by SET TIME later
+        // open_close_servo(OPEN_TICKS); // can be changed by PORTION SIZE later
+        // vTaskDelay(NEXT_FEED);        // can be changed by SET TIME later
 
         /* --- change mode on mode btn press --- */
         if (mode_logic_state() == 0)
