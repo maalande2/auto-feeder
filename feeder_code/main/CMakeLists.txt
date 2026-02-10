@@ -1,2 +1,10 @@
-idf_component_register(SRCS "main.c" "servo.c"
-                    INCLUDE_DIRS ".")
+idf_component_register(
+    SRCS
+        "main.c"
+        "components/buttons.c"
+        "components/mode.c"
+        "components/servo.c"
+    INCLUDE_DIRS
+        "."
+        "components"
+)

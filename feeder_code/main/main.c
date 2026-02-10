@@ -1,38 +1,34 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/ledc.h"
-#include "esp_log.h"
+#include <esp_log.h>
 
-// header files
-#include "config.h"
-#include "pins.h"
-#include "servo.h"
+#include "components/servo.h"
+#include "components/buttons.h"
+#include "components/mode.h"
 
-// link gpio input to btn, link btn to isr
-
-TaskHandle_t xFeedTaskHandle;
-
-void IRAM_ATTR button_isr_handler(void *arg)
-{
-    BaseType_t xTaskWoken = pdFALSE;
-    vTaskNotifyGiveFromISR(xFeedTaskHandle, &xTaskWoken);
-    portYIELD_FROM_ISR(xTaskWoken);
-}
+const char *MAIN_TAG = "main loop";
 
 void app_main(void)
 {
+    // init & close servo
     servo_init();
-    // close servos before running loop
     set_servo_angle(SERVO_CLOSE);
+    // btn task set up
+    setup_btn_task();
 
-    // set next feedtime
     while (1)
     {
-        // task notify for next-feed-time ticks
-        open_close_servo(OPEN_TICKS);
-        vTaskDelay(NEXT_FEED);
+        /* --- servos open-close each feed time --- */
+        open_close_servo(OPEN_TICKS); // can be changed by PORTION SIZE later
+        vTaskDelay(NEXT_FEED);        // can be changed by SET TIME later
+
+        /* --- change mode on mode btn press --- */
+        if (mode_logic_state() == 0)
+        {
+            change_mode();
+        }
+        vTaskDelay(pdMS_TO_TICKS(250));
     }
 }

@@ -3,8 +3,9 @@
 #include "freertos/task.h"
 #include "driver/ledc.h"
 #include "esp_log.h"
-#include "pins.h"
-#include "config.h"
+#include "../config.h"
+
+static const char *TAG = "SERVO";
 
 void servo_init()
 {
@@ -46,14 +47,16 @@ void set_servo_angle(uint32_t us)
     // speed mode, channel, duty
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, us_to_duty(us));
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, us_to_duty(us));
+    ESP_LOGI(TAG, "OPEN");
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+    ESP_LOGI(TAG, "CLOSE");
 }
 
 // opening and closing
 void open_close_servo(TickType_t open_ticks)
 {
     set_servo_angle(SERVO_OPEN);
-    vTaskDelay(open_ticks);
+    vTaskDelay(open_ticks); // freertos
     set_servo_angle(SERVO_CLOSE);
 }
