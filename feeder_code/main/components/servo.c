@@ -1,11 +1,15 @@
 #include "servo.h"
 #include <stdio.h>
+#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/ledc.h"
 #include "esp_log.h"
 #include "../config.h"
 
 static const char *TAG = "SERVO";
+
+static uint8_t servo_params;
+static TaskHandle_t servoHandle = NULL;
 
 void servo_init()
 {
@@ -59,4 +63,23 @@ void open_close_servo(TickType_t open_ticks)
     set_servo_angle(SERVO_OPEN);
     vTaskDelay(open_ticks); // freertos
     set_servo_angle(SERVO_CLOSE);
+}
+
+// set up mode btn task
+void setup_servo_task(void)
+{
+    xTaskCreate(servo_event_loop, "servo task", STACK_SIZE, &servo_params, SERVO_TASK_PRIO, &servoHandle);
+}
+
+// main servo event loop
+void servo_event_loop(void *pvParameters)
+{
+    (void)pvParameters;
+    servo_init();
+    set_servo_angle(SERVO_CLOSE);
+    while (1)
+    {
+        open_close_servo(OPEN_TICKS);
+        vTaskDelay(NEXT_FEED);
+    }
 }
