@@ -10,10 +10,10 @@ int prev_mode_logic = LOW;
 int mode_logic_flag = LOW;
 
 // debug tag
-const char *BTN_TAG = "Button Task";
+static const char *BTN_TAG = "Button Task";
 
 // create gpio button
-void mode_btn_config(void)
+void mode_btn_init(void)
 {
     gpio_config_t io = {
         .pin_bit_mask = 1ULL << MODE_BTN_PIN,
@@ -28,14 +28,14 @@ void mode_btn_config(void)
 // set up mode btn task
 void setup_btn_task(void)
 {
-    xTaskCreate(btn_event_loop, "btn task", STACK_SIZE, &task_params, TASK_PRIO, &btnHandle);
+    xTaskCreate(btn_event_loop, "btn task", STACK_SIZE, &task_params, BTN_TASK_PRIO, &btnHandle);
 }
 
 // main loop
 void btn_event_loop(void *pvParameters)
 {
     (void)pvParameters;
-    mode_btn_config();
+    mode_btn_init();
     while (1)
     {
         curr_mode_logic = gpio_get_level(MODE_BTN_PIN);
