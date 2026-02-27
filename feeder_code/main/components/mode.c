@@ -11,5 +11,6 @@ void change_mode(void)
 
 Mode get_mode(void)
 {
+    // 0 - timing, 1 - serving, 2 - feed
     return curr_mode;
 }

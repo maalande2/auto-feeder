@@ -80,6 +80,6 @@ void servo_event_loop(void *pvParameters)
     while (1)
     {
         open_close_servo(OPEN_TICKS);
-        vTaskDelay(NEXT_FEED);
+        vTaskDelay(NEXT_FEED); // should come from buttons.c
     }
 }
