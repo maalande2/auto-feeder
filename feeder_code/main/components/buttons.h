@@ -16,7 +16,7 @@ void btn_init(void);
 void setup_btn_task(void);
 void mode_btn_press(void);
 int mode_logic_state(void);
-void cvbbbb(void);
+void inc_btn_press(void);
 void dec_btn_press(void);
 void confirm_btn_press(void);
 void btn_event_loop(void *pvParameters);
