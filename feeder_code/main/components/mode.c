@@ -11,6 +11,11 @@ void change_mode(void)
 
 Mode get_mode(void)
 {
-    // 0 - timing, 1 - serving, 2 - feed
+    /*
+    0 - timing
+    1 - servings a day
+    2 - serving size (open ticks)
+    3 - feed now
+    */
     return curr_mode;
 }

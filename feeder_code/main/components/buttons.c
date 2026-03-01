@@ -15,21 +15,17 @@ int mode_logic_flag = LOW;
 // inc btn logic
 int curr_inc_logic = LOW;
 int prev_inc_logic = LOW;
-int inc_logic_flag = LOW;
 
 // dec btn logic
 int curr_dec_logic = LOW;
 int prev_dec_logic = LOW;
-int dec_logic_flag = LOW;
 
 // confirm btn logic
 int curr_confirm_logic = LOW;
 int prev_confirm_logic = LOW;
-int confirm_logic_flag = LOW;
 
 // edit feed timing
-int counter = 0;
-int save_time = 0;
+int temp_counter = 0;
 
 // debug tag
 static const char *BTN_TAG = "Button Task";
@@ -78,7 +74,7 @@ void mode_btn_press(void)
         {
             ESP_LOGI(BTN_TAG, "MODE btn pressed");
             mode_logic_flag = HIGH;
-            counter = 0;
+            temp_counter = 0;
             while (gpio_get_level(MODE_BTN_PIN) == HIGH)
             {
                 vTaskDelay(pdMS_TO_TICKS(POLL_INTRV)); // prevent duplicate reads
@@ -102,10 +98,10 @@ void inc_btn_press(void)
     {
         vTaskDelay(pdMS_TO_TICKS(BTN_DEBOUNCE));
         curr_inc_logic = gpio_get_level(INC_BTN_PIN);
-        if (curr_inc_logic == HIGH && get_mode() == MODE_TIMING) // only changes on MODE_TIMING
+        if (curr_inc_logic == HIGH && (get_mode() == MODE_TIMING || get_mode() == MODE_SERVINGS_DAY))
         {
-            counter += 1;
-            ESP_LOGI(BTN_TAG, "INC pressed: %d", counter);
+            temp_counter += 1;
+            ESP_LOGI(BTN_TAG, "INC pressed: %d", temp_counter);
             while (gpio_get_level(INC_BTN_PIN) == HIGH)
             {
                 vTaskDelay(pdMS_TO_TICKS(POLL_INTRV)); // prevent duplicate reads
@@ -129,10 +125,10 @@ void dec_btn_press(void)
     {
         vTaskDelay(pdMS_TO_TICKS(BTN_DEBOUNCE));
         curr_dec_logic = gpio_get_level(DEC_BTN_PIN);
-        if (curr_dec_logic == HIGH && get_mode() == MODE_TIMING) // only changes on MODE_TIMING
+        if (curr_dec_logic == HIGH && (get_mode() == MODE_TIMING || get_mode() == MODE_SERVINGS_DAY))
         {
-            counter -= 1;
-            ESP_LOGI(BTN_TAG, "DEC pressed: %d", counter);
+            temp_counter -= 1;
+            ESP_LOGI(BTN_TAG, "DEC pressed: %d", temp_counter);
             while (gpio_get_level(DEC_BTN_PIN) == HIGH)
             {
                 vTaskDelay(pdMS_TO_TICKS(POLL_INTRV)); // prevent duplicate reads
@@ -160,11 +156,31 @@ void confirm_btn_press(void)
             */
             if (get_mode() == MODE_TIMING)
             {
-                save_time = counter;
+                if (temp_counter > 0)
+                {
+                    next_feed_time = temp_counter;
+                }
+                else
+                {
+                    next_feed_time = 0;
+                }
+                temp_counter = 0;
             }
-            else if (get_mode == MODE_FEED)
+            else if (get_mode() == MODE_SERVINGS_DAY)
             {
-                save_time = 0;
+                if (temp_counter > 0)
+                {
+                    servings_day = temp_counter;
+                }
+                else
+                {
+                    servings_day = 1;
+                }
+                temp_counter = 0;
+            }
+            else if (get_mode() == MODE_FEED)
+            {
+                next_feed_time = 0;
             }
             while (gpio_get_level(CONFIRM_BTN_PIN) == HIGH)
             {

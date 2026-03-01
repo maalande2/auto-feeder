@@ -9,6 +9,7 @@
 typedef enum
 {
     MODE_TIMING,
+    MODE_SERVINGS_DAY,
     MODE_PORTION,
     MODE_FEED,
     COUNT

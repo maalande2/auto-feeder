@@ -9,3 +9,6 @@
 #define DEC_BTN_PIN GPIO_NUM_26
 #define CONFIRM_BTN_PIN GPIO_NUM_21
 #define STACK_SIZE 2048
+
+extern volatile int next_feed_time;
+extern volatile int servings_day;

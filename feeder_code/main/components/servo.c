@@ -11,6 +11,10 @@ static const char *TAG = "SERVO";
 static uint8_t servo_params;
 static TaskHandle_t servoHandle = NULL;
 
+int next_feed_time_default = 10;
+volatile int next_feed_time = 10;
+volatile int servings_day = 2;
+
 void servo_init()
 {
     // timer config
@@ -51,18 +55,19 @@ void set_servo_angle(uint32_t us)
     // speed mode, channel, duty
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, us_to_duty(us));
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, us_to_duty(us));
-    ESP_LOGI(TAG, "OPEN");
+
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
-    ESP_LOGI(TAG, "CLOSE");
 }
 
 // opening and closing
 void open_close_servo(TickType_t open_ticks)
 {
     set_servo_angle(SERVO_OPEN);
+    ESP_LOGI(TAG, "OPEN");
     vTaskDelay(open_ticks); // freertos
     set_servo_angle(SERVO_CLOSE);
+    ESP_LOGI(TAG, "CLOSE");
 }
 
 // set up mode btn task
@@ -77,9 +82,18 @@ void servo_event_loop(void *pvParameters)
     (void)pvParameters;
     servo_init();
     set_servo_angle(SERVO_CLOSE);
+    TickType_t start_tick = xTaskGetTickCount();
     while (1)
     {
-        open_close_servo(OPEN_TICKS);
-        vTaskDelay(NEXT_FEED); // should come from buttons.c
+        // ESP_LOGI(TAG, "Delay for next open-close: %d seconds", next_feed_time);
+        TickType_t curr_tick = xTaskGetTickCount();
+        TickType_t elapsed_time = curr_tick - start_tick;
+        if (elapsed_time >= pdMS_TO_TICKS(next_feed_time * 1000))
+        {
+            open_close_servo(OPEN_TICKS);
+            next_feed_time = 60 / servings_day; // servings a minute for now
+            start_tick = xTaskGetTickCount();
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
