@@ -11,9 +11,8 @@ static const char *TAG = "SERVO";
 static uint8_t servo_params;
 static TaskHandle_t servoHandle = NULL;
 
-int next_feed_time_default = 10;
-volatile int next_feed_time = 10;
-volatile int servings_day = 2;
+volatile int next_feed_time = 60; // 10s
+volatile int servings_day = 2;    // twice a minute
 
 void servo_init()
 {
@@ -85,7 +84,6 @@ void servo_event_loop(void *pvParameters)
     TickType_t start_tick = xTaskGetTickCount();
     while (1)
     {
-        // ESP_LOGI(TAG, "Delay for next open-close: %d seconds", next_feed_time);
         TickType_t curr_tick = xTaskGetTickCount();
         TickType_t elapsed_time = curr_tick - start_tick;
         if (elapsed_time >= pdMS_TO_TICKS(next_feed_time * 1000))

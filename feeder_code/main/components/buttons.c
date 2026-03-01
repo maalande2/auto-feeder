@@ -24,7 +24,7 @@ int prev_dec_logic = LOW;
 int curr_confirm_logic = LOW;
 int prev_confirm_logic = LOW;
 
-// edit feed timing
+// edit servo timing
 int temp_counter = 0;
 
 // debug tag
