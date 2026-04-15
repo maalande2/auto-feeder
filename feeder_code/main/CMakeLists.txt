@@ -4,6 +4,8 @@ idf_component_register(
         "components/buttons.c"
         "components/mode.c"
         "components/servo.c"
+        "components/display.c"
+        "components/i2c_bus.c"
     INCLUDE_DIRS
         "."
         "components"

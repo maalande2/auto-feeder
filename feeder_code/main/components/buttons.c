@@ -2,6 +2,7 @@
 #include "mode.h"
 #include "servo.h"
 #include "../config.h"
+#include "display.h"
 
 // task setup related
 static uint8_t task_params;
